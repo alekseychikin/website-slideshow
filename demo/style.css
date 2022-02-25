@@ -1,0 +1,22 @@
+body {
+	margin: 0;
+}
+
+.slide {
+	width: 100%;
+}
+
+.normal {
+	height: 100vh;
+	background: tomato;
+}
+
+.short {
+	height: 400px;
+	background: antiquewhite;
+}
+
+.long {
+	height: 140vh;
+	background: linear-gradient(155deg, khaki, blueviolet, orange);
+}
