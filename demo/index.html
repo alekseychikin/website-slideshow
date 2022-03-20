@@ -7,16 +7,42 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
+	<ul class="menu">
+		<li><a href="#a1">#1</a></li>
+		<li><a href="#a2">#2</a></li>
+		<li><a href="#a3">#3</a></li>
+		<li><a href="#a4">#4</a></li>
+	</ul>
 	<div class="slides">
-		<div class="slide normal">Normal</div>
-		<div class="slide short">Short</div>
-		<div class="slide long">Long</div>
-		<div class="slide normal">Normal</div>
+		<div class="slide normal" id="a1">Normal</div>
+		<div class="slide short" id="a2">Short</div>
+		<div class="slide long" id="a3">Long</div>
+		<div class="slide normal" id="a4">Normal</div>
 	</div>
 	<script type="module">
-		import Slider from '../src/index.mjs'
+		import SiteSlider from '../src/index.mjs'
 
-		const slider = new Slider(document.querySelectorAll('.slide'))
+		let skipChange = false
+		const slides = Array.from(document.querySelectorAll('.slide'))
+		const slider = new SiteSlider(slides, (index) => {
+			skipChange = true
+			location.hash = `a${index + 1}`
+		})
+
+		window.addEventListener('hashchange', onHashChange)
+
+		function onHashChange() {
+			if (location.hash.length && !skipChange) {
+				const hash = location.hash.substr(1)
+				const index = slides.findIndex((slide) => slide.id === hash)
+
+				slider.slide(index)
+			}
+
+			skipChange = false
+		}
+
+		onHashChange()
 	</script>
 </body>
 </html>

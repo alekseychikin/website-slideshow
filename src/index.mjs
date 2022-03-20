@@ -1,5 +1,5 @@
 export default class Slider {
-	constructor(slides) {
+	constructor(slides, callback = () => {}) {
 		this.slides = slides
 
 		window.addEventListener('scroll', this.onScroll)
@@ -13,6 +13,7 @@ export default class Slider {
 		this.lock = false
 		this.init()
 		this.updateLayout()
+		this.callback = callback
 	}
 
 	onScroll = () => {
@@ -30,92 +31,161 @@ export default class Slider {
 			}
 		}
 
-		// console.log(scrollTop, this.offsets[this.current] + previousOffset)
-		// console.log(previousOffset)
+		if (!this.lock) {
+			if (index !== this.current) {
+				this.slide(index, true)
+			} else if (this.scrolls[this.current]) {
+				previousOffset -= this.offsets[index]
+				previousHeight -= this.heights[index]
 
-		if (index !== this.current) {
-			this.slide(index, true)
-			this.lock = true
-		} else if (!this.lock && this.scrolls[this.current]) {
-			previousOffset -= this.offsets[index]
-			previousHeight -= this.heights[index]
+				const slideScroll = Math.min(
+					previousHeight + this.scrolls[this.current],
+					previousHeight + scrollTop - previousOffset
+				)
 
-			const slideScroll = Math.min(previousHeight + this.scrolls[this.current], previousHeight + scrollTop - previousOffset)
-			// const slideScroll = previousHeight
-
-			// console.log(slideScroll)
-
-			this.setTransform(this.slides[this.current], slideScroll, '')
+				this.setTransform(this.slides[this.current], slideScroll)
+			}
 		}
 	}
 
 	init = () => {
 		this.slides.forEach((slide) => {
 			slide.style.position = 'fixed'
-			slide.style.transition = this.transitionStyle
-			slide.addEventListener('transitionend', this.eventHandler)
 		})
 	}
 
 	updateLayout = () => {
+		let previousHeight = 0
 		let previousOffset = 0
-		let height = 0
+		let bodyHeight = 0
 
+		this.scrolls.splice(0)
 		this.offsets.splice(0)
+		this.heights.splice(0)
 		this.slides.forEach((slide, index) => {
 			const scrollHeight = Math.max(0, slide.offsetHeight - window.innerHeight)
 			const slideHeight = slide.offsetHeight - scrollHeight
 			const offset = Math.min(100, slideHeight / 2) + scrollHeight
 
 			slide.style.position = 'fixed'
-			slide.style.top = `${previousOffset}px`
+			slide.style.top = previousHeight + 'px'
 			this.scrolls.push(scrollHeight)
 			this.offsets.push(offset)
 			this.heights.push(slideHeight)
 
 			if (index < this.slides.length - 1) {
-				previousOffset += slideHeight
-				height += offset
+				previousHeight += slideHeight
+				bodyHeight += offset
 			}
+
+			if (index < this.current) {
+				previousOffset += slideHeight
+			}
+
+			this.setTransform(slide, previousOffset)
 		})
 
-		document.body.style.height = `100vh`
-		document.body.style.paddingBottom = `${height}px`
+		document.body.style.height = '100vh'
+		document.body.style.paddingBottom = bodyHeight + 'px'
 	}
 
 	slide = (current, slideSibling = false) => {
+		const slideUp = slideSibling && current < this.current
+		const slideDown = slideSibling && current > this.current
+		const originOffsets = []
+		const offsets = []
 		let index = 0
+		let originPreviousHeight = 0
 		let previousHeight = 0
 		let previousOffset = 0
 
-		for (; index < current; index++) {
-			previousHeight += this.heights[index]
-			previousOffset += this.offsets[index]
-			this.setTransform(this.slides[index], previousHeight, this.transitionStyle)
+		this.lock = true
+
+		for (index = 0; index < this.slides.length; index++) {
+			if (index < this.current) {
+				originPreviousHeight += this.heights[index]
+			}
+
+			if (index < current) {
+				originOffsets.push(originPreviousHeight + this.scrolls[index])
+
+				previousOffset += this.offsets[index]
+				previousHeight += this.heights[index]
+
+				offsets.push(previousHeight + this.scrolls[index])
+			}
+
+			if (index === current) {
+				originOffsets.push(originPreviousHeight + (slideUp ? this.scrolls[index] : 0))
+				offsets.push(previousHeight + (slideUp ? this.scrolls[index] : 0))
+			}
+
+			if (index > current) {
+				originOffsets.push(originPreviousHeight)
+				offsets.push(previousHeight)
+			}
 		}
 
-		this.setTransform(
-			this.slides[index],
-			previousHeight + (slideSibling && current < this.current ? this.scrolls[index] : 0),
-			this.transitionStyle
-		)
-		// console.log(previousOffset)
+		startAmination(500, (progress) => {
+			for (index = 0; index < this.slides.length; index++) {
+				this.setTransform(
+					this.slides[index],
+					calcValueTransition(originOffsets[index], offsets[index], easeInOut(progress))
+				)
+			}
+		}, () => {
+			window.scrollTo(0, previousOffset + (slideUp && this.scrolls[current] ? this.scrolls[current] - 5 : 0))
 
-		for (++index; index < this.slides.length; index++) {
-			this.setTransform(this.slides[index], previousHeight, this.transitionStyle)
+			this.current = current
+			this.callback(current)
+			this.lock = false
+			this.onScroll()
+		})
+	}
+
+	setTransform = (slide, translate) => {
+		slide.style.transform = 'translateY(' + (-translate) + 'px)'
+	}
+
+	destroy = () => {
+		window.removeEventListener('scroll', this.onScroll)
+		window.removeEventListener('resize', this.updateLayout)
+		document.body.style.height = ''
+		document.body.style.paddingBottom = ''
+
+		this.slides.forEach((slide) => {
+			slide.style.transform = ''
+			slide.style.position = ''
+			slide.style.top = ''
+		})
+	}
+}
+
+function startAmination(duration, callback, finish) {
+	let startAminationTime = null
+
+	requestAnimationFrame(function measure(time) {
+		if (!startAminationTime) {
+			startAminationTime = time
 		}
 
-		// console.log(previousOffset, this.scrolls[current])
-		window.scrollTo(0, previousOffset + (slideSibling && current < this.current ? this.scrolls[current] + this.offsets[current] - 5 : 0))
-		this.current = current
-	}
+		const progress = (time - startAminationTime) / duration
 
-	setTransform = (slide, translate, transition) => {
-		slide.style.transition = transition
-		slide.style.transform = `translateY(${-translate}px)`
-	}
+		callback(progress)
 
-	eventHandler = () => {
-		this.lock = false
-	}
+		if (progress < 1) {
+			requestAnimationFrame(measure)
+		} else {
+			callback(1)
+			finish()
+		}
+	})
+}
+
+function easeInOut(time) {
+	return 0.5 * (1 - Math.cos(Math.PI * time))
+}
+
+function calcValueTransition(beginValue, finishValue, progress) {
+	return beginValue + (finishValue - beginValue) * progress
 }
