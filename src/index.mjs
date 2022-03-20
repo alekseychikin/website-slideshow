@@ -5,7 +5,7 @@ export default class Slider {
 		window.addEventListener('scroll', this.onScroll)
 		window.addEventListener('resize', this.updateLayout)
 
-		this.transitionStyle = 'transform 0.3s ease-in-out'
+		this.pixelsPerSlide = 200
 		this.offsets = []
 		this.heights = []
 		this.scrolls = []
@@ -35,15 +35,24 @@ export default class Slider {
 			if (index !== this.current) {
 				this.slide(index, true)
 			} else if (this.scrolls[this.current]) {
+				const halfOffset = this.pixelsPerSlide / 2
+
 				previousOffset -= this.offsets[index]
 				previousHeight -= this.heights[index]
 
-				const slideScroll = Math.min(
-					previousHeight + this.scrolls[this.current],
-					previousHeight + scrollTop - previousOffset
-				)
-
-				this.setTransform(this.slides[this.current], slideScroll)
+				if (
+					previousOffset + halfOffset < scrollTop &&
+					previousHeight - halfOffset > this.scrolls[this.current] + scrollTop
+				) {
+					this.slides[this.current].style.position = 'absolute'
+					this.setTransform(this.slides[this.current], previousHeight - previousOffset - halfOffset)
+				} else if (previousOffset + halfOffset >= scrollTop) {
+					this.slides[this.current].style.position = 'fixed'
+					this.setTransform(this.slides[this.current], previousHeight)
+				} else if (previousHeight - halfOffset <= this.scrolls[this.current] + scrollTop) {
+					this.slides[this.current].style.position = 'fixed'
+					this.setTransform(this.slides[this.current], previousHeight + this.scrolls[this.current])
+				}
 			}
 		}
 	}
@@ -65,7 +74,7 @@ export default class Slider {
 		this.slides.forEach((slide, index) => {
 			const scrollHeight = Math.max(0, slide.offsetHeight - window.innerHeight)
 			const slideHeight = slide.offsetHeight - scrollHeight
-			const offset = Math.min(100, slideHeight / 2) + scrollHeight
+			const offset = Math.min(this.pixelsPerSlide, slideHeight / 2) + scrollHeight
 
 			slide.style.position = 'fixed'
 			slide.style.top = previousHeight + 'px'
@@ -87,6 +96,7 @@ export default class Slider {
 
 		document.body.style.height = '100vh'
 		document.body.style.paddingBottom = bodyHeight + 'px'
+		this.onScroll()
 	}
 
 	slide = (current, slideSibling = false) => {
@@ -134,8 +144,6 @@ export default class Slider {
 				)
 			}
 		}, () => {
-			window.scrollTo(0, previousOffset + (slideUp && this.scrolls[current] ? this.scrolls[current] - 5 : 0))
-
 			this.current = current
 			this.callback(current)
 			this.lock = false
