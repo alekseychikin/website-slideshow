@@ -14,17 +14,69 @@
 		<li><a href="#a4">#4</a></li>
 	</ul>
 	<div class="slides">
-		<div class="slide normal" id="a1">Normal</div>
-		<div class="slide short" id="a2">Short</div>
-		<div class="slide long" id="a3">Long</div>
+		<div class="slide normal" id="a1">
+			<p class="card">
+				This is the worst UI pattern you can choose, but if you loose fight with your
+				product designer, you better use my library for scrolling website by slides.
+				Other libraries depends on <code>mouse wheel</code> event, but it's very bad dependency,
+				too much unpredictable. There are too many devices and operating systems.
+				Better choice is <code>window scroll</code> event. I use it in this library.
+			</p>
+		</div>
+		<div class="slide short" id="a2">
+			<p class="card">
+				This library supports regular slides with <code>height: 100vh</code>, short slides
+				(height of slide is smaller than window height), and long slies
+				(height of slide is bigger than window height). In last case you scoll slide
+				like normal website.
+			</p>
+		</div>
+		<div class="slide long" id="a3">
+			<div class="card">
+				<p>You can use library with your favourite bundler and install it as npm dependency:</p>
+
+				<pre>
+					<code>npm install scroll-slide</code>
+				</pre>
+
+				<p>You can mount minified version and use it like global variable <code>ScrollSlide</code>.</p>
+
+				<pre>
+					<code>&lt;script src=&quot;node_modules/scroll-slide/dist/scroll-slide.min.js&quot;&gt;&lt;/script&gt;</code>
+				</pre>
+
+				<p></p>
+
+				<p>If your website supports only modern browsers you can even require minified ecmascript module.</p>
+
+				<pre>
+					<code>import ScrollSlide from './node_modules/scroll-slide/dist/scroll-slide.min.mjs'</code>
+				</pre>
+
+				<p>If you use build system like webpack or esbuild you can import as usual.</p>
+
+				<pre>
+					<code>import ScrollSlide from 'scroll-slide'</code>
+					<code>const ScrollSlide = require('scroll-slide')</code>
+				</pre>
+
+				<p>After you get ScrollSlide you can initiate it with next options.</p>
+				
+				<pre>
+					<code>const slider = new ScrollSlide(slides, callback)</code>
+				</pre>
+			</div>
+		</div>
 		<div class="slide normal" id="a4">Normal</div>
 	</div>
+	<!-- <script src="../dist/index.min.js"></script> -->
 	<script type="module">
-		import SiteSlider from '../src/index.mjs'
+		// import ScrollSlide from '../dist/index.min.mjs'
+		import ScrollSlide from '../src/index.mjs'
 
 		let skipChange = false
 		const slides = Array.from(document.querySelectorAll('.slide'))
-		const slider = new SiteSlider(slides, (index) => {
+		const slider = new ScrollSlide(slides, (index) => {
 			skipChange = true
 			location.hash = `a${index + 1}`
 		})

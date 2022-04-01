@@ -6,15 +6,15 @@
   "main": "dist/index.js",
   "module": "dist/index.min.mjs",
   "scripts": {
-    "build": "npm run build:iife && npm run build:esm && npm run build:cjs",
-    "build:iife": "esbuild src/index.mjs --format=iife --global-name=SiteSlider --outfile=dist/index.min.js",
-    "build:esm": "esbuild src/index.mjs --format=esm --outfile=dist/index.min.mjs",
-    "build:cjs": "esbuild src/index.mjs --format=cjs --outfile=dist/index.js"
+    "build": "node ./build.js"
   },
   "keywords": [],
   "author": "Aleksey Chikin <mail@makingoff.name>",
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.17.8",
+    "@babel/preset-env": "^7.16.11",
+    "babel-plugin-add-module-exports": "^1.0.4",
     "esbuild": "^0.14.23"
   }
 }

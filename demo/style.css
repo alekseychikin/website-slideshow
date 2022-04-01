@@ -3,22 +3,30 @@ body {
 }
 
 .slide {
+	box-sizing: border-box;
+	padding: 50px;
 	width: 100%;
 }
 
 .normal {
-	height: 100vh;
-	background: tomato;
+	min-height: 100vh;
+	background: #f66;
 }
 
 .short {
-	height: 400px;
 	background: antiquewhite;
 }
 
 .long {
-	height: 140vh;
 	background: linear-gradient(155deg, khaki, blueviolet, orange);
+}
+
+.card {
+	margin: 0;
+	padding: 50px;
+	font-size: 36px;
+	line-height: 1.2;
+	background: #fff;
 }
 
 .menu {
@@ -30,4 +38,14 @@ body {
 	display: flex;
 	gap: 20px;
 	list-style: none;
+}
+
+pre {
+	white-space: normal;
+	font-family: 'Menlo', monospace;
+}
+
+pre code {
+	white-space: pre-wrap;
+	font: inherit;
 }
