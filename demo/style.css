@@ -1,5 +1,20 @@
 body {
 	margin: 0;
+	font: 36px/1.2 'Times', serif;
+}
+
+a {
+	color: #5035ff;
+	transition: color 0.15s ease-in-out;
+}
+
+a:visited {
+	color: #ab9ff8;
+}
+
+a:hover {
+	color: #4facfb;
+	transition: color 0s step-start;
 }
 
 .slide {
@@ -10,6 +25,9 @@ body {
 
 .normal {
 	min-height: 100vh;
+}
+
+.first {
 	background: #f66;
 }
 
@@ -18,7 +36,11 @@ body {
 }
 
 .long {
-	background: linear-gradient(155deg, khaki, blueviolet, orange);
+	background: blueviolet;
+}
+
+.last {
+	background: darksalmon;
 }
 
 .card {
@@ -41,11 +63,23 @@ body {
 }
 
 pre {
+	border-radius: 5px;
+	padding: 10px;
 	white-space: normal;
 	font-family: 'Menlo', monospace;
+	list-style: none;
+	background: #e6e6e6;
+}
+
+code {
+	border-radius: 5px;
+	padding: 0 10px;
+	background: #e6e6e6;
 }
 
 pre code {
+	display: list-item;
+	padding: 0;
 	white-space: pre-wrap;
 	font: inherit;
 }

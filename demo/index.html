@@ -14,7 +14,7 @@
 		<li><a href="#a4">#4</a></li>
 	</ul>
 	<div class="slides">
-		<div class="slide normal" id="a1">
+		<div class="slide normal first" id="a1">
 			<p class="card">
 				This is the worst UI pattern you can choose, but if you loose fight with your
 				product designer, you better use my library for scrolling website by slides.
@@ -26,14 +26,14 @@
 		<div class="slide short" id="a2">
 			<p class="card">
 				This library supports regular slides with <code>height: 100vh</code>, short slides
-				(height of slide is smaller than window height), and long slies
+				(height of slide is smaller than window height), and long slides
 				(height of slide is bigger than window height). In last case you scoll slide
 				like normal website.
 			</p>
 		</div>
 		<div class="slide long" id="a3">
 			<div class="card">
-				<p>You can use library with your favourite bundler and install it as npm dependency:</p>
+				<p>You can install library as npm dependency or download last build from <a href="https://github.com">github releases</a>.</p>
 
 				<pre>
 					<code>npm install scroll-slide</code>
@@ -47,7 +47,7 @@
 
 				<p></p>
 
-				<p>If your website supports only modern browsers you can even require minified ecmascript module.</p>
+				<p>If your website supports only modern browsers you can even import minified ecmascript module.</p>
 
 				<pre>
 					<code>import ScrollSlide from './node_modules/scroll-slide/dist/scroll-slide.min.mjs'</code>
@@ -57,6 +57,7 @@
 
 				<pre>
 					<code>import ScrollSlide from 'scroll-slide'</code>
+					<code>// or</code>
 					<code>const ScrollSlide = require('scroll-slide')</code>
 				</pre>
 
@@ -67,7 +68,9 @@
 				</pre>
 			</div>
 		</div>
-		<div class="slide normal" id="a4">Normal</div>
+		<div class="slide normal last" id="a4">
+			<p class="card">You can thank me</p>
+		</div>
 	</div>
 	<!-- <script src="../dist/index.min.js"></script> -->
 	<script type="module">
