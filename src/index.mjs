@@ -42,14 +42,14 @@ export default class Slider {
 
 				if (
 					previousOffset + halfOffset < scrollTop &&
-					previousHeight - halfOffset > this.scrolls[this.current] + scrollTop
+					previousOffset + halfOffset + this.scrolls[this.current] > scrollTop
 				) {
 					this.slides[this.current].style.position = 'absolute'
 					this.setTransform(this.slides[this.current], previousHeight - previousOffset - halfOffset)
 				} else if (previousOffset + halfOffset >= scrollTop) {
 					this.slides[this.current].style.position = 'fixed'
 					this.setTransform(this.slides[this.current], previousHeight)
-				} else if (previousHeight - halfOffset <= this.scrolls[this.current] + scrollTop) {
+				} else if (previousOffset + halfOffset + this.scrolls[this.current] <= scrollTop) {
 					this.slides[this.current].style.position = 'fixed'
 					this.setTransform(this.slides[this.current], previousHeight + this.scrolls[this.current])
 				}
@@ -74,7 +74,7 @@ export default class Slider {
 		this.slides.forEach((slide, index) => {
 			const scrollHeight = Math.max(0, slide.offsetHeight - window.innerHeight)
 			const slideHeight = slide.offsetHeight - scrollHeight
-			const offset = Math.min(this.pixelsPerSlide, slideHeight / 2) + scrollHeight
+			const offset = this.pixelsPerSlide + scrollHeight
 
 			slide.style.position = 'fixed'
 			slide.style.top = previousHeight + 'px'
